@@ -1,7 +1,7 @@
 <?php
 declare(strict_types = 1);
 
-namespace Wumvi\Classes\Utils;
+namespace Core\Utils\Utils;
 
 /**
  * Class JsonToReadConverter
@@ -22,6 +22,7 @@ class JsonToReadConverter
 
     /**
      * @param array $list
+     *
      * @return array
      */
     public function convert(array $list): array

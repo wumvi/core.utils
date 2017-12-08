@@ -1,11 +1,11 @@
 <?php
 declare(strict_types = 1);
 
-namespace Wumvi\Classes\Utils;
+namespace Core\Utils\Utils;
 
 /**
  * Class ArrayHelp
- * @package Wumvi\Classes\Utils
+ * @package Core\Utils\Utils
  */
 class ArrayHelp
 {
@@ -27,17 +27,5 @@ class ArrayHelp
         }
 
         return $random;
-    }
-
-    /**
-     * @param array $array
-     * @param string $delimiter
-     * @return string
-     */
-    public function arrayKeyValueJoin(array $array, string $delimiter = ''): string
-    {
-        return implode($delimiter, array_map(function ($value, $key) {
-            return $key . '=' . $value;
-        }, $array, array_keys($array)));
     }
 }

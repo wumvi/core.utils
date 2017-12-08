@@ -1,83 +1,18 @@
 <?php
-declare(strict_types = 1);
+declare(strict_types=1);
 
-namespace Wumvi\Classes;
+namespace Core\Utils;
 
 /**
  * Класс для работы со строками.
  */
 class Str
 {
-    /** @const Список дней недели. */
-    const WEEK_DAYS = [
-        1 => 'понедельник',
-        2 => 'вторник',
-        3 => 'среда',
-        4 => 'четверг',
-        5 => 'пятница',
-        6 => 'суббота',
-        0 => 'воскресенье',
-    ];
-
-    /** @const Список дней недели в коротком виде. */
-    const WEEK_DAY_SHORT = [
-        1 => 'пн',
-        2 => 'вт',
-        3 => 'ср',
-        4 => 'чт',
-        5 => 'пт',
-        6 => 'сб',
-        0 => 'вс',
-    ];
-
-    /** @const Список месяцев в именительном падеже. */
-    const MONTHS_IN_NOMINATIVE = [
-        1 => 'январь',
-        2 => 'февраль',
-        3 => 'март',
-        4 => 'апрель',
-        5 => 'май',
-        6 => 'июнь',
-        7 => 'июль',
-        8 => 'август',
-        9 => 'сентябрь',
-        10 => 'октябрь',
-        11 => 'ноябрь',
-        12 => 'декабрь',
-    ];
-
-    /** @const Список месяцев в родительном падеже. */
-    const MONTHS_IN_GEN = [
-        1 => 'января',
-        2 => 'февраля',
-        3 => 'марта',
-        4 => 'апреля',
-        5 => 'мая',
-        6 => 'июня',
-        7 => 'июля',
-        8 => 'августа',
-        9 => 'сентября',
-        10 => 'октября',
-        11 => 'ноября',
-        12 => 'декабря',
-    ];
-
-    /**
-     * Возвращает название месяца в именительном падеже
-     * по укзанному порядковому номеру месяца.
-     *
-     * @param int $month порядковый номер месяца.
-     * @return string Название месяца в именительном падеже.
-     */
-    public static function getMonthNameInNominative(int $month): string
-    {
-        return self::MONTHS_IN_NOMINATIVE[$month] ?? '';
-    }
-
     /**
      * Конвертирует данные в JSON из Array.
      *
-     * @param mixed $var Значение (можно использовать массивы)
+     * @param mixed $var Значение
+     *
      * @return string Сконвертированный текст
      */
     public static function toJson($var): string
@@ -134,128 +69,17 @@ class Str
     }
 
     /**
-     * Определение правильного окончания для слова в зависимости от численности.
-     * @param array $endings Массив существительных склоняемых к числу (1, 4, 5)
-     * @param int $number Число для которого нужно выбрать правильную фразу.
-     *
-     * @return string Результат
-     */
-    public static function plural(array $endings, int $number): string
-    {
-        $numberForOperations = abs($number);
-        $cases = [2, 0, 1, 1, 1, 2];
-
-        $isTwo = ($numberForOperations % 100 > 4 && $numberForOperations % 100 < 20);
-        $endNum = $isTwo ? 2 : $cases[min($numberForOperations % 10, 5)];
-        $string = $endings[$endNum];
-
-        return sprintf($string, $number);
-    }
-
-    /**
      * Метод обрезает текст, если он больше заданной
      * длины и добавляет в конце троеточие.
      *
      * @param  string $text Исходный текст
      * @param  int $length Ограничение по длине
+     *
      * @return string Обрезанный текст
      */
     public static function subDescription(string $text, int $length): string
     {
-        return mb_strlen($text, 'utf-8') > $length ? mb_substr($text, 0, $length - 3, 'utf-8') . '...' : $text;
-    }
-
-    /**
-     * Переводит первый символ строки в верхний регистр.
-     * Аналог ucfirst для русских слов.
-     *
-     * @param string $str Строка для преобразования.
-     * @return string Результирующая строка.
-     */
-    public static function firstCharToUpper(string $str): string
-    {
-        return mb_strtoupper(mb_substr($str, 0, 1, 'UTF-8'), 'UTF-8')
-            . mb_substr($str, 1, mb_strlen($str, 'UTF-8'), 'UTF-8');
-    }
-
-    /**
-     * Переводит первый символ строки в нижний регистр.
-     * Аналог lcfirst для русских слов.
-     *
-     * @param string $str Строка для преобразования.
-     * @return string Результирующая строка.
-     */
-    public static function firstCharToLower(string $str): string
-    {
-        return mb_strtolower(mb_substr($str, 0, 1, 'UTF-8'), 'UTF-8')
-            . mb_substr($str, 1, mb_strlen($str, 'UTF-8') - 1, 'UTF-8');
-    }
-
-    /**
-     * Переводит строку в нижний регистр
-     *
-     * @param string $str Строка для преобразования.
-     * @return string Результирующая строка.
-     */
-    public static function strtolower(string $str): string
-    {
-        return mb_strtolower($str, 'UTF-8');
-    }
-
-    /**
-     * Правильное форматирование даты на русский язык
-     * @param string $format Шаблон результирующей строки (string) с датой.
-     * @param int $timestamp Timestamp метки времени
-     * @return string Отформатированная строка
-     *
-     * @link http://php.net/manual/ru/function.date.php
-     */
-    public static function date(string $format, int $timestamp = 0): string
-    {
-        $timestamp = $timestamp ?: time();
-
-        $num = date('n', $timestamp);
-        // Если день не указан, массив возвращается в именительном падеже.
-        $isGenitive = strstr($format, 'd') || strstr($format, 'j');
-        $month = $isGenitive ? self::MONTHS_IN_GEN[$num] : self::MONTHS_IN_NOMINATIVE[$num];
-
-        $ruFormat = str_replace(
-            ['F', 'M', 'l', 'D',],
-            [
-                $month,
-                mb_substr($month, 0, 3, 'UTF-8'),
-                self::WEEK_DAYS[date('w', $timestamp)],
-                self::WEEK_DAY_SHORT[date('w', $timestamp)],
-            ],
-            $format
-        );
-
-        return date($ruFormat, $timestamp);
-    }
-
-    /**
-     * Выводит дату с указанным форматом в более привлекательном виде, применяя для этого некоторые изменения.
-     *
-     * Применяет следующие изменения:
-     * - если год указанной даты равен году текущей даты, код не отображается.
-     *
-     * @param int $timestamp Представляет собой integer
-     * метку времени,
-     * @param string $format Шаблон результирующей строки (string) с датой.
-     * по умолчанию равную текущему локальному времени, если timestamp не указан.
-     * Другими словами, значение по умолчанию равно результату функции time().
-     *
-     * @return string Форматированная строка.
-     */
-    public static function smartDate(int $timestamp = 0, string $format = 'j F Y'): string
-    {
-        $timestamp = $timestamp ?: time();
-
-        if (date('Y') == date('Y', $timestamp)) {
-            $format = trim(str_replace(['L', 'o', 'Y', 'y'], '', $format));
-        }
-
-        return self::date($format, $timestamp);
+        return mb_strlen($text, 'utf-8') > $length ? substr($text, 0, $length - 3) . '...' : $text;
     }
 
     /**
@@ -277,6 +101,7 @@ class Str
      *
      * @param int $num цена в численном представлении
      * @param bool $isAddNameOfMoney
+     *
      * @return string цена в строковом представлении
      *
      * @see http://habrahabr.ru/post/53210/
@@ -381,29 +206,30 @@ class Str
     }
 
     /**
-     * Обрезалка строки до первого встреченного спецсимвола
+     * Определение правильного окончания для слова в зависимости от численности.
      *
-     * @param string $string Строка, которую надо укоротить
-     * @param array $symbols Массив дополнительных символов,на которые будет реагировать функция
-     * @return string Укороченная строка
+     * @param array $endings Массив существительных склоняемых к числу (1, 4, 5)
+     * @param int $number Число для которого нужно выбрать правильную фразу.
      *
+     * @return string Результат
      */
-    public static function cutStringUntilFirstSpecialSign(string $string, array $symbols = [',', '(', '/', '[']): string
+    public static function plural(array $endings, int $number): string
     {
-        foreach ($symbols as $symbol) {
-            $pos = mb_strpos($string, $symbol, 0, 'UTF-8');
-            if ($pos !== false) {
-                return mb_substr($string, 0, $pos, 'UTF-8');
-            }
-        }
+        $numberForOperations = abs($number);
+        $cases = [2, 0, 1, 1, 1, 2];
 
-        return $string;
+        $isTwo = ($numberForOperations % 100 > 4 && $numberForOperations % 100 < 20);
+        $endNum = $isTwo ? 2 : $cases[min($numberForOperations % 10, 5)];
+        $string = $endings[$endNum];
+
+        return sprintf($string, $number);
     }
 
     /**
      * Форматирует размер файла
      *
      * @param string $bytes Размер в байтах
+     *
      * @return string Строка в формате 34,56 Б|КБ|МБ|ГБ|ТБ
      */
     public static function convertSizeToText(string $bytes): string
@@ -424,18 +250,5 @@ class Str
         }
 
         return number_format($bytes / $tb, 2, ',', '') . ' ТБ';
-    }
-
-    /**
-     * Сравнивание строки регистро-независимо
-     *
-     * @param string $str1 Первая строка
-     * @param string $str2 Вторая строка
-     * @return int < 0 if str1 is less than str2; > 0
-     * if str1 is greater than str2, and 0 if they are equal.
-     */
-    public static function strCaseCmp(string $str1, string $str2): int
-    {
-        return strcmp(mb_strtoupper($str1, 'utf-8'), mb_strtoupper($str2, 'utf-8'));
     }
 }
