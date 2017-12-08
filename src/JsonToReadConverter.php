@@ -1,7 +1,7 @@
 <?php
 declare(strict_types = 1);
 
-namespace Core\Utils\Utils;
+namespace Core\Utils;
 
 /**
  * Class JsonToReadConverter
